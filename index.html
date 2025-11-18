@@ -567,52 +567,74 @@
     /* ============================================================
        CARD TEMPLATE
        ============================================================ */
-    function cardTemplate({id, title, src}){
-      const card=document.createElement('article');
-      card.className='card';
-      card.dataset.id=id;
+   <script>
+function cardTemplate({id, title, src}){
+  const card=document.createElement('article');
+  card.className='card';
+  card.dataset.id=id;
 
-      const head=document.createElement('header');
-      const titleWrap=document.createElement('div');
-      titleWrap.className='title';
-      const logo=document.createElement('div');
-      logo.className='logo';
-      const h2=document.createElement('h2');
-      h2.textContent=title || 'Game';
-      titleWrap.append(logo,h2);
+  const head=document.createElement('header');
+  const titleWrap=document.createElement('div');
+  titleWrap.className='title';
+  const logo=document.createElement('div');
+  logo.className='logo';
+  const h2=document.createElement('h2');
+  h2.textContent=title || 'Game';
+  titleWrap.append(logo,h2);
 
-      const tools=document.createElement('div');
-      tools.className='tools';
-      const btnOpen=document.createElement('button');
-      btnOpen.className='btn-icon'; btnOpen.title='Open in new tab';
-      btnOpen.appendChild(icon('open'));
-      btnOpen.addEventListener('click', ()=> window.open(src, '_blank', 'noopener'));
+  const tools=document.createElement('div');
+  tools.className='tools';
 
-      const btnExpand=document.createElement('button');
-      btnExpand.className='btn-icon'; btnExpand.title='Toggle fullscreen';
-      btnExpand.appendChild(icon('expand'));
-      btnExpand.addEventListener('click', ()=> toggleFullscreen(card));
+  // Open in new tab
+  const btnOpen=document.createElement('button');
+  btnOpen.className='btn-icon'; btnOpen.title='Open in new tab';
+  btnOpen.appendChild(icon('open'));
+  btnOpen.addEventListener('click', ()=> window.open(src, '_blank','noopener'));
 
-      const btnRemove=document.createElement('button');
-      btnRemove.className='btn-icon'; btnRemove.title='Remove';
-      btnRemove.appendChild(icon('close'));
-      btnRemove.addEventListener('click', ()=> removeCard(id));
-
-      tools.append(btnOpen, btnExpand, btnRemove);
-      head.append(titleWrap, tools);
-
-      const frame=document.createElement('div');
-      frame.className='frame';
-      const iframe=document.createElement('iframe');
-      iframe.loading='lazy';
-      iframe.referrerPolicy='no-referrer-when-downgrade';
-      iframe.src=computeEmbedSrc(src);
-      frame.appendChild(iframe);
-
-      card.append(head, frame);
-      return card;
+  // Open in about:blanker
+  const btnBlanker=document.createElement('button');
+  btnBlanker.className='btn-icon'; btnBlanker.title='Open in about:blanker';
+  btnBlanker.appendChild(icon('open'));
+  btnBlanker.addEventListener('click', ()=>{
+    const win = window.open('about:blank','_blank');
+    if(win){
+      win.document.write(`
+        <!DOCTYPE html>
+        <html><head><title>${title}</title></head>
+        <body style="margin:0;padding:0;overflow:hidden;background:#000;">
+          <iframe src="${src}" style="border:0;width:100%;height:100%;"></iframe>
+        </body></html>
+      `);
+      win.document.close();
     }
+  });
 
+  // Fullscreen
+  const btnExpand=document.createElement('button');
+  btnExpand.className='btn-icon'; btnExpand.title='Toggle fullscreen';
+  btnExpand.appendChild(icon('expand'));
+  btnExpand.addEventListener('click', ()=> toggleFullscreen(card));
+
+  // Remove
+  const btnRemove=document.createElement('button');
+  btnRemove.className='btn-icon'; btnRemove.title='Remove';
+  btnRemove.appendChild(icon('close'));
+  btnRemove.addEventListener('click', ()=> removeCard(id));
+
+  tools.append(btnOpen, btnBlanker, btnExpand, btnRemove);
+  head.append(titleWrap, tools);
+
+  const frame=document.createElement('div');
+  frame.className='frame';
+  const iframe=document.createElement('iframe');
+  iframe.loading='lazy';
+  iframe.src=computeEmbedSrc(src);
+  frame.appendChild(iframe);
+
+  card.append(head, frame);
+  return card;
+}
+</script>
     /* ============================================================
        FULLSCREEN
        ============================================================ */
